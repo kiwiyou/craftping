@@ -3,5 +3,9 @@ name = "craftping"
 version = "0.1.0"
 authors = ["kiwiyou <kiwiyou.dev@gmail.com>"]
 edition = "2018"
+description = "Minecraft Server List Ping Implementation"
+license = "MIT"
+keyword = ["minecraft", "ping"]
+categories = ["Network Programming"]
 
 [dependencies]
