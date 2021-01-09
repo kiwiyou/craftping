@@ -13,7 +13,7 @@ pub enum Response {
 pub(crate) struct RawLatest {
     pub version: Version,
     pub players: Players,
-    pub description: Description,
+    pub description: RawDescription,
     pub favicon: Option<String>,
     #[serde(rename = "modinfo")]
     pub mod_info: Option<ModInfo>,
@@ -28,7 +28,8 @@ pub struct Latest {
     pub max_players: usize,
     pub online_players: usize,
     pub sample: Option<Vec<Player>>,
-    pub description: Description,
+    pub description: Chat,
+    // Zero-sized favicon and No favicon should be different.
     pub favicon: Option<Vec<u8>>,
     pub mod_info: Option<ModInfo>,
     pub forge_data: Option<ForgeData>,
@@ -50,7 +51,7 @@ impl TryFrom<RawLatest> for Latest {
             max_players: raw.players.max,
             online_players: raw.players.online,
             sample: raw.players.sample,
-            description: raw.description,
+            description: raw.description.into(),
             favicon,
             mod_info: raw.mod_info,
             forge_data: raw.forge_data,
@@ -79,10 +80,9 @@ pub struct Player {
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
-pub enum Description {
+pub(crate) enum RawDescription {
     Raw(String),
-    // TODO: properly handle ChatComponent
-    Chat { text: String },
+    Chat(Chat),
 }
 
 #[derive(Debug, Deserialize)]
@@ -130,4 +130,34 @@ pub struct Legacy {
     pub motd: String,
     pub players: usize,
     pub max_players: usize,
+}
+
+#[derive(Debug, Deserialize, Default)]
+pub struct Chat {
+    pub text: String,
+    #[serde(default)]
+    pub bold: bool,
+    #[serde(default)]
+    pub italic: bool,
+    #[serde(default)]
+    pub underlined: bool,
+    #[serde(default)]
+    pub strikethrough: bool,
+    #[serde(default)]
+    pub obfuscated: bool,
+    pub color: Option<String>,
+    #[serde(default)]
+    pub extra: Vec<Chat>,
+}
+
+impl From<RawDescription> for Chat {
+    fn from(description: RawDescription) -> Self {
+        match description {
+            RawDescription::Chat(chat) => chat,
+            RawDescription::Raw(text) => Chat {
+                text,
+                ..Default::default()
+            },
+        }
+    }
 }
