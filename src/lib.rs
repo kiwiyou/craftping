@@ -98,10 +98,11 @@ fn ping_legacy(hostname: &str, port: u16) -> Result<Response> {
     if buffer.len() <= 3 || buffer[0] != 0xff {
         return Err(Error::UnsupportedProtocol);
     }
-    let (response, malformed) = encoding_rs::UTF_16BE.decode_without_bom_handling(&buffer[3..]);
-    if malformed {
-        return Err(Error::UnsupportedProtocol);
-    }
+    let utf16be: Vec<u16> = buffer[3..]
+        .chunks_exact(2)
+        .map(|chunk| ((chunk[0] as u16) << 8) | chunk[1] as u16)
+        .collect();
+    let response = String::from_utf16(&utf16be).map_err(|_| Error::UnsupportedProtocol)?;
 
     parse_legacy(&response)
 }
