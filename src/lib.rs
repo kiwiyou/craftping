@@ -1,4 +1,3 @@
-use entity::Legacy;
 use std::{
     convert::TryInto,
     fmt::Display,
@@ -35,12 +34,10 @@ impl From<std::io::Error> for Error {
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub fn ping(hostname: &str, port: u16) -> Result<Response> {
-    ping_latest(hostname, port)
-        .map(Response::Latest)
-        .or_else(|_| ping_legacy(hostname, port).map(Response::Legacy))
+    ping_latest(hostname, port).or_else(|_| ping_legacy(hostname, port))
 }
 
-fn ping_latest(hostname: &str, port: u16) -> Result<Latest> {
+fn ping_latest(hostname: &str, port: u16) -> Result<Response> {
     let mut socket = TcpStream::connect((hostname, port))?;
     let mut buffer = vec![
         0x00, // 1st packet id: 0 for handshake as VarInt
@@ -78,7 +75,7 @@ fn ping_latest(hostname: &str, port: u16) -> Result<Latest> {
     raw.try_into()
 }
 
-fn ping_legacy(hostname: &str, port: u16) -> Result<Legacy> {
+fn ping_legacy(hostname: &str, port: u16) -> Result<Response> {
     let mut socket = TcpStream::connect((hostname, port))?;
     let ping_packet = [
         0xfe, // 1st packet id: 0xfe for server list ping
@@ -109,7 +106,7 @@ fn ping_legacy(hostname: &str, port: u16) -> Result<Legacy> {
     parse_legacy(&response)
 }
 
-fn parse_legacy(s: &str) -> Result<Legacy> {
+fn parse_legacy(s: &str) -> Result<Response> {
     let mut fields = s.split('\0');
     let magic = fields.next().map(|s| s == "\u{00a7}\u{0031}");
     let protocol = fields.next().and_then(|s| s.parse().ok());
@@ -125,12 +122,19 @@ fn parse_legacy(s: &str) -> Result<Legacy> {
             Some(motd),
             Some(players),
             Some(max_players),
-        ) => Ok(Legacy {
+        ) => Ok(Response {
             protocol,
             version: version.to_string(),
-            motd: motd.to_string(),
-            players,
+            description: Chat {
+                text: motd.to_string(),
+                ..Default::default()
+            },
+            online_players: players,
             max_players,
+            favicon: None,
+            forge_data: None,
+            mod_info: None,
+            sample: None,
         }),
         _ => Err(Error::UnsupportedProtocol),
     }

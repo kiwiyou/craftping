@@ -3,12 +3,6 @@ use std::convert::TryFrom;
 use crate::Error;
 use serde::Deserialize;
 
-#[derive(Debug)]
-pub enum Response {
-    Latest(Latest),
-    Legacy(Legacy),
-}
-
 #[derive(Debug, Deserialize)]
 pub(crate) struct RawLatest {
     pub version: Version,
@@ -22,7 +16,7 @@ pub(crate) struct RawLatest {
 }
 
 #[derive(Debug)]
-pub struct Latest {
+pub struct Response {
     pub version: String,
     pub protocol: i32,
     pub max_players: usize,
@@ -35,7 +29,7 @@ pub struct Latest {
     pub forge_data: Option<ForgeData>,
 }
 
-impl TryFrom<RawLatest> for Latest {
+impl TryFrom<RawLatest> for Response {
     type Error = Error;
 
     fn try_from(raw: RawLatest) -> Result<Self, Self::Error> {
@@ -121,15 +115,6 @@ pub struct ForgeMod {
     pub mod_id: String,
     #[serde(rename = "modmarker")]
     pub mod_marker: String,
-}
-
-#[derive(Debug)]
-pub struct Legacy {
-    pub protocol: i32,
-    pub version: String,
-    pub motd: String,
-    pub players: usize,
-    pub max_players: usize,
 }
 
 #[derive(Debug, Deserialize, Default)]
