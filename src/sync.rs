@@ -1,7 +1,27 @@
+//! Provides synchronous, blocking [`ping`](ping) function.
+//!
+//! The [`ping`](ping) function here sends a ping request, and wait for the server to respond.
+//! If you want to send ping in an asynchronous context, see [`tokio`](tokio) module.
 use std::{convert::TryInto, net::TcpStream};
 
 use crate::*;
 
+/// Send a ping request to the server and wait for the response.
+///
+/// See also [`Response`](Response).
+///
+/// # Examples
+///
+/// ```no_run
+/// use craftping::sync::ping;
+/// 
+/// let response = ping("my.server.com", 25565).unwrap();
+/// println!(
+///     "{} of {} player(s) online",
+///     response.online_players,
+///     response.max_players,
+/// );
+/// ```
 pub fn ping(hostname: &str, port: u16) -> Result<Response> {
     ping_latest(hostname, port).or_else(|_| ping_legacy(hostname, port))
 }

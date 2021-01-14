@@ -1,19 +1,26 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 use std::{
     fmt::Display,
     io::{Read, Write},
 };
 
-pub mod entity;
+mod entity;
 #[cfg(feature = "sync")]
+#[cfg_attr(docsrs, doc(cfg(features = "sync")))]
 pub mod sync;
 #[cfg(feature = "async-tokio")]
+#[cfg_attr(docsrs, doc(cfg(features = "async-tokio")))]
 pub mod tokio;
 
-use entity::*;
+pub use entity::*;
 
 #[derive(Debug)]
+/// The ping error type.
 pub enum Error {
+    /// Returned when I/O (especially networking) failed.
     Io(std::io::Error),
+    /// Returned when the response cannot be recognized.
     UnsupportedProtocol,
 }
 
@@ -34,6 +41,7 @@ impl From<std::io::Error> for Error {
     }
 }
 
+/// The ping result type.
 pub type Result<T> = std::result::Result<T, Error>;
 
 fn build_latest_request(hostname: &str, port: u16) -> Result<Vec<u8>> {
@@ -125,6 +133,7 @@ fn parse_legacy(s: &str) -> Result<Response> {
     }
 }
 
+// used in read_varint implemenetation
 const LAST_SEVEN_BITS: i32 = 0b0111_1111;
 const NEXT_BYTE_EXISTS: u8 = 0b1000_0000;
 

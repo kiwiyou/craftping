@@ -1,3 +1,7 @@
+//! Provides asynchronous [`ping`](ping) function.
+//!
+//! The [`ping`](ping) function here sends a ping request, and returns a [`Future`](std::future::Future) resolves to a result of [`Response`](Response).
+//! If you want to send ping synchronously, see [`sync`](sync) module.
 use std::convert::TryInto;
 
 use ::tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -5,6 +9,24 @@ use ::tokio::net::TcpStream;
 
 use crate::*;
 
+/// Send a ping request to the server and return a future response.
+///
+/// See also [`Response`](Response).
+///
+/// # Examples
+///
+/// ```no_run
+/// use craftping::tokio::ping;
+/// 
+/// # async fn run() {
+/// let response = ping("my.server.com", 25565).await.unwrap();
+/// println!(
+///     "{} of {} player(s) online",
+///     response.online_players,
+///     response.max_players,
+/// );
+/// # }
+/// ```
 pub async fn ping(hostname: &str, port: u16) -> Result<Response> {
     match ping_latest(hostname, port).await {
         ok @ Ok(_) => ok,
