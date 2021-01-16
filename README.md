@@ -1,4 +1,4 @@
-# craftping ![crates.io](https://img.shields.io/crates/v/craftping.svg) ![docs.rs](https://docs.rs/craftping/badge.svg) ![license](https://img.shields.io/github/license/kiwiyou/craftping.svg)
+# craftping [![crates.io](https://img.shields.io/crates/v/craftping.svg)](https://crates.io/crates/craftping) [![docs.rs](https://docs.rs/craftping/badge.svg)](https://docs.rs/craftping) ![license](https://img.shields.io/github/license/kiwiyou/craftping.svg)
 
 craftping is a Rust library to ping Minecraft Servers.
 
