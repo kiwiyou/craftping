@@ -17,7 +17,7 @@ use crate::*;
 ///
 /// ```no_run
 /// use craftping::tokio::ping;
-/// 
+///
 /// # async fn run() {
 /// let response = ping("my.server.com", 25565).await.unwrap();
 /// println!(

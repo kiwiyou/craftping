@@ -1,4 +1,22 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![allow(clippy::clippy::needless_doctest_main)]
+//! craftping provides a `ping` function to send Server List Ping requests to a Minecraft server.
+//!
+//! # Feature flags
+//!
+//! - `sync` (default): Enables synchronous, blocking [`ping`](crate::sync::ping) function.
+//! - `async-tokio`: Enables asynchronous, tokio-based [`ping`](crate::tokio::ping) function.
+//!
+//! # Examples
+//!
+//! ```no_run
+//! use craftping::sync::ping;
+//!
+//! fn main() {
+//!     let response = ping("mc.hypixel.net", 25565).unwrap();
+//!     println!("Players online: {}", response.online_players);
+//! }
+//! ```
 
 use std::{
     fmt::Display,

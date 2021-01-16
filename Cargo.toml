@@ -17,7 +17,8 @@ async-tokio = ["tokio"]
 base64 = { version = "0.13.0" }
 serde = { version = "1.0.118", features = ["derive"] }
 serde_json = "1.0.61"
-tokio = { version = "1.0.1", default-features = false, features = ["net", "io-util"], optional = true }
+tokio = { version = "1.0.2", default-features = false, features = ["net", "io-util"], optional = true }
 
 [dev-dependencies]
-tokio = { version = "1.0.1", features = ["rt"] }
+tokio = { version = "1.0.1", features = ["macros", "rt"] }
+futures = { version = "0.3.9" }

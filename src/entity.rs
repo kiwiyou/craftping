@@ -135,7 +135,7 @@ pub struct ForgeData {
 
 #[derive(Debug, Deserialize)]
 /// The information of the channels used by the mods.
-/// 
+///
 /// See [the minecraft protocol wiki](https://wiki.vg/Plugin_channels) for more information.
 /// Unfortunately, the exact semantics of its field is currently not found.
 /// We do not guarantee the document is right, and you should re-check the values you've received.

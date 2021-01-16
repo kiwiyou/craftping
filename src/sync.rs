@@ -14,7 +14,7 @@ use crate::*;
 ///
 /// ```no_run
 /// use craftping::sync::ping;
-/// 
+///
 /// let response = ping("my.server.com", 25565).unwrap();
 /// println!(
 ///     "{} of {} player(s) online",
