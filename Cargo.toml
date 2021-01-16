@@ -7,6 +7,7 @@ description = "Minecraft Server List Ping Implementation"
 license = "MIT"
 keywords = ["minecraft", "ping"]
 categories = ["Network Programming"]
+repository = "https://github.com/kiwiyou/craftping"
 
 [features]
 default = ["sync"]
