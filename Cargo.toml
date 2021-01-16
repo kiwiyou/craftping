@@ -9,6 +9,10 @@ keywords = ["minecraft", "ping"]
 categories = ["Network Programming"]
 repository = "https://github.com/kiwiyou/craftping"
 
+[package.metadata.docs.rs]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
+
 [features]
 default = ["sync"]
 sync = []
