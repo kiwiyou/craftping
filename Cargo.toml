@@ -6,7 +6,7 @@ edition = "2018"
 description = "Minecraft Server List Ping Implementation"
 license = "MIT"
 keywords = ["minecraft", "ping"]
-categories = ["Network Programming"]
+categories = ["network-programming"]
 repository = "https://github.com/kiwiyou/craftping"
 
 [package.metadata.docs.rs]
