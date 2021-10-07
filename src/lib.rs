@@ -30,13 +30,13 @@ use std::{
 
 mod entity;
 #[cfg(feature = "async-futures")]
-#[cfg_attr(docsrs, doc(cfg(features = "async-futures")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "async-futures")))]
 pub mod futures;
 #[cfg(feature = "sync")]
-#[cfg_attr(docsrs, doc(cfg(features = "sync")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "sync")))]
 pub mod sync;
 #[cfg(feature = "async-tokio")]
-#[cfg_attr(docsrs, doc(cfg(features = "async-tokio")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "async-tokio")))]
 pub mod tokio;
 
 pub use entity::*;
