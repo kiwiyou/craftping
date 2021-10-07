@@ -5,15 +5,20 @@
 //! # Feature flags
 //!
 //! - `sync` (default): Enables synchronous, blocking [`ping`](crate::sync::ping) function.
-//! - `async-tokio`: Enables asynchronous, tokio-based [`ping`](crate::tokio::ping) function.
+//! - `async-tokio`: Enables asynchronous, `tokio`-based [`ping`](crate::tokio::ping) function.
+//! - `async-futures`: Enables asynchronous, `futures`-based [`ping`](crate::futures::ping) function.
 //!
 //! # Examples
 //!
 //! ```no_run
 //! use craftping::sync::ping;
+//! use std::net::TcpStream;
 //!
 //! fn main() {
-//!     let response = ping("mc.hypixel.net", 25565).unwrap();
+//!     let hostname = "my.server.com";
+//!     let port = 25565;
+//!     let mut stream = TcpStream::connect((hostname, port)).unwrap();
+//!     let response = ping(&mut stream, hostname, port).unwrap();
 //!     println!("Players online: {}", response.online_players);
 //! }
 //! ```
@@ -24,6 +29,9 @@ use std::{
 };
 
 mod entity;
+#[cfg(feature = "async-futures")]
+#[cfg_attr(docsrs, doc(cfg(features = "async-futures")))]
+pub mod futures;
 #[cfg(feature = "sync")]
 #[cfg_attr(docsrs, doc(cfg(features = "sync")))]
 pub mod sync;
@@ -70,7 +78,7 @@ fn build_latest_request(hostname: &str, port: u16) -> Result<Vec<u8>> {
         0x0f, // protocol version: -1 (determining what version to use) as VarInt
     ];
     // Some server implementations require hostname and port to be properly set (Notchian does not)
-    write_varint(&mut buffer, hostname.len() as i32)?; // length of hostname as VarInt
+    write_varint(&mut buffer, hostname.len() as i32); // length of hostname as VarInt
     buffer.extend_from_slice(hostname.as_bytes());
     buffer.extend_from_slice(&[
         (port >> 8) as u8,
@@ -79,7 +87,7 @@ fn build_latest_request(hostname: &str, port: u16) -> Result<Vec<u8>> {
     ]);
     // buffer for the 1st and 2nd packet
     let mut full_buffer = vec![];
-    write_varint(&mut full_buffer, buffer.len() as i32)?; // length of 1st packet id + data as VarInt
+    write_varint(&mut full_buffer, buffer.len() as i32); // length of 1st packet id + data as VarInt
     full_buffer.append(&mut buffer);
     full_buffer.extend_from_slice(&[
         1,    // length of 2nd packet id + data as VarInt
@@ -158,7 +166,7 @@ const NEXT_BYTE_EXISTS: u8 = 0b1000_0000;
 // bit mask to remove remaining 7 MSB's after right shift
 const SEVEN_BITS_SHIFT_MASK: i32 = 0x01_ff_ff_ff;
 
-fn write_varint(sink: &mut impl std::io::Write, mut value: i32) -> Result<()> {
+fn write_varint(sink: &mut Vec<u8>, mut value: i32) {
     loop {
         let mut temp = (value & LAST_SEVEN_BITS) as u8;
         // i32 right shift is arithmetic shift (preserves MSB)
@@ -167,9 +175,9 @@ fn write_varint(sink: &mut impl std::io::Write, mut value: i32) -> Result<()> {
         if value != 0 {
             temp |= NEXT_BYTE_EXISTS;
         }
-        sink.write_all(&[temp])?;
+        sink.push(temp);
         if value == 0 {
-            break Ok(());
+            break;
         }
     }
 }

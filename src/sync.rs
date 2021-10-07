@@ -1,8 +1,8 @@
 //! Provides synchronous, blocking [`ping`](ping) function.
 //!
 //! The [`ping`](ping) function here sends a ping request, and wait for the server to respond.
-//! If you want to send ping in an asynchronous context, see [`tokio`](tokio) module.
-use std::{convert::TryInto, net::TcpStream};
+//! If you want to send ping in an asynchronous context, see [`tokio`](tokio) or [`futures`](futures) module.
+use std::convert::TryInto;
 
 use crate::*;
 
@@ -14,44 +14,55 @@ use crate::*;
 ///
 /// ```no_run
 /// use craftping::sync::ping;
+/// use std::net::TcpStream;
 ///
-/// let response = ping("my.server.com", 25565).unwrap();
+/// let hostname = "my.server.com";
+/// let port = 25565;
+/// let mut stream = TcpStream::connect((hostname, port)).unwrap();
+/// let response = ping(&mut stream, hostname, port).unwrap();
 /// println!(
 ///     "{} of {} player(s) online",
 ///     response.online_players,
 ///     response.max_players,
 /// );
 /// ```
-pub fn ping(hostname: &str, port: u16) -> Result<Response> {
-    ping_latest(hostname, port).or_else(|_| ping_legacy(hostname, port))
+pub fn ping<Stream>(stream: &mut Stream, hostname: &str, port: u16) -> Result<Response>
+where
+    Stream: Read + Write,
+{
+    ping_latest(stream, hostname, port).or_else(|_| ping_legacy(stream))
 }
 
-fn ping_latest(hostname: &str, port: u16) -> Result<Response> {
-    let mut socket = TcpStream::connect((hostname, port))?;
+fn ping_latest<Stream>(stream: &mut Stream, hostname: &str, port: u16) -> Result<Response>
+where
+    Stream: Read + Write,
+{
     let request = build_latest_request(hostname, port)?;
-    socket.write_all(&request)?;
-    socket.flush()?;
+    stream.write_all(&request)?;
+    stream.flush()?;
 
-    let _length = read_varint(&mut socket)?;
-    let packet_id = read_varint(&mut socket)?;
-    let response_length = read_varint(&mut socket)?;
+    let _length = read_varint(stream)?;
+    let packet_id = read_varint(stream)?;
+    let response_length = read_varint(stream)?;
     if packet_id != 0x00 || response_length < 0 {
         return Err(Error::UnsupportedProtocol);
     }
     let mut response_buffer = vec![0; response_length as usize];
-    socket.read_exact(&mut response_buffer)?;
+    stream.read_exact(&mut response_buffer)?;
 
     let raw = decode_latest_response(&response_buffer)?;
     raw.try_into()
 }
 
-fn ping_legacy(hostname: &str, port: u16) -> Result<Response> {
-    let mut socket = TcpStream::connect((hostname, port))?;
-    socket.write_all(&LEGACY_REQUEST)?;
-    socket.flush()?;
+fn ping_legacy<Stream>(stream: &mut Stream) -> Result<Response>
+where
+    Stream: Read + Write,
+{
+    stream.write_all(&LEGACY_REQUEST)?;
+    stream.flush()?;
 
     let mut buffer = Vec::new();
-    socket.read_to_end(&mut buffer)?;
+    stream.read_to_end(&mut buffer)?;
 
     let response = decode_legacy(&buffer)?;
     parse_legacy(&response)
@@ -81,15 +92,16 @@ mod test {
     use std::io::Cursor;
     #[test]
     fn serialize_varint() {
-        let mut cursor = Cursor::new(Vec::new());
+        let mut buffer = vec![];
         let samples = [-2147483648, -1, 0, 1, 2147483647];
         for &i in samples.iter() {
-            cursor.set_position(0);
-            write_varint(&mut cursor, i).unwrap();
-            cursor.set_position(0);
-            let deserialized = read_varint(&mut cursor).unwrap();
+            buffer.clear();
+            write_varint(&mut buffer, i);
+            let mut reader = Cursor::new(buffer);
+            let deserialized = read_varint(&mut reader).unwrap();
 
             assert_eq!(i, deserialized);
+            buffer = reader.into_inner();
         }
     }
 }

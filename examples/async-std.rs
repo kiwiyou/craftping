@@ -1,7 +1,7 @@
-use craftping::tokio::ping;
-use tokio::net::TcpStream;
+use async_std::net::TcpStream;
+use craftping::futures::ping;
 
-#[tokio::main(flavor = "current_thread")]
+#[async_std::main]
 async fn main() -> craftping::Result<()> {
     let servers = ["us.mineplex.com", "mc.hypixel.net"];
     for &server in servers.iter() {

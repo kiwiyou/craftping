@@ -1,10 +1,10 @@
-//! Provides asynchronous [`ping`](ping) function. (especially for tokio streams)
+//! Provides asynchronous [`ping`](ping) function. (especially for futures-io compatible streams)
 //!
 //! The [`ping`](ping) function here sends a ping request, and returns a [`Future`](std::future::Future) resolves to a result of [`Response`](Response).
 //! If you want to send ping synchronously, see [`sync`](sync) module.
 use std::convert::TryInto;
 
-use ::tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
+use ::futures::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 
 use crate::*;
 
@@ -15,8 +15,8 @@ use crate::*;
 /// # Examples
 ///
 /// ```no_run
-/// use craftping::tokio::ping;
-/// use tokio::net::TcpStream;
+/// use craftping::futures::ping;
+/// use async_std::net::TcpStream;
 ///
 /// # async fn run() {
 /// let hostname = "my.server.com";
@@ -99,7 +99,7 @@ where
 mod test {
     use super::*;
 
-    use std::io::Cursor;
+    use ::futures::io::Cursor;
 
     #[test]
     fn serialize_varint() {
