@@ -3,7 +3,7 @@ use std::convert::TryFrom;
 use crate::Error;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub(crate) struct RawLatest {
     pub version: Version,
     pub players: Players,
@@ -15,7 +15,7 @@ pub(crate) struct RawLatest {
     pub forge_data: Option<ForgeData>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 /// A ping response returned from server.
 pub struct Response {
     /// The version name of the server.
@@ -70,20 +70,20 @@ impl TryFrom<RawLatest> for Response {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub(crate) struct Version {
     pub name: String,
     pub protocol: i32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub(crate) struct Players {
     pub max: usize,
     pub online: usize,
     pub sample: Option<Vec<Player>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 /// The sample players' information.
 pub struct Player {
     /// The name of the player.
@@ -93,14 +93,14 @@ pub struct Player {
     pub id: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(untagged)]
 pub(crate) enum RawDescription {
     Raw(String),
     Chat(Chat),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 /// The mod information object used in FML protocol (version 1.7 - 1.12).
 pub struct ModInfo {
     #[serde(rename = "type")]
@@ -112,7 +112,7 @@ pub struct ModInfo {
     pub mod_list: Vec<ModInfoItem>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 /// The information of an installed mod.
 pub struct ModInfoItem {
     #[serde(rename = "modid")]
@@ -122,7 +122,7 @@ pub struct ModInfoItem {
     pub version: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 /// The forge information object used in FML2 protocol (version 1.13 - current).
 pub struct ForgeData {
     /// The list of the channels used by the mods.
@@ -134,7 +134,7 @@ pub struct ForgeData {
     pub fml_network_version: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 /// The information of the channels used by the mods.
 ///
 /// See [the minecraft protocol wiki](https://wiki.vg/Plugin_channels) for more information.
@@ -149,7 +149,7 @@ pub struct ForgeChannel {
     pub required: bool,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 /// The information of an installed mod.
 pub struct ForgeMod {
     #[serde(rename = "modId")]
@@ -160,7 +160,7 @@ pub struct ForgeMod {
     pub mod_marker: String,
 }
 
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize, Default, Clone)]
 /// The chat component used in the server description.
 ///
 /// See also [the minecraft protocol wiki](https://wiki.vg/Chat#Current_system_.28JSON_Chat.29).
