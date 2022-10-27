@@ -51,7 +51,8 @@ impl TryFrom<RawLatest> for Response {
     fn try_from(raw: RawLatest) -> Result<Self, Self::Error> {
         let favicon = if let Some(favicon) = raw.favicon {
             // normal server favicon should start with "data:image/png;base64,"
-            Some(base64::decode(&favicon[22..]).map_err(|_| Error::UnsupportedProtocol)?)
+            let slice = favicon.get(22..).ok_or(Error::UnsupportedProtocol)?;
+            Some(base64::decode(slice).map_err(|_| Error::UnsupportedProtocol)?)
         } else {
             None
         };
