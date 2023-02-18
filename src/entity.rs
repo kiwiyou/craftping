@@ -13,10 +13,14 @@ pub(crate) struct RawLatest {
     pub mod_info: Option<ModInfo>,
     #[serde(rename = "forgeData")]
     pub forge_data: Option<ForgeData>,
+    #[serde(skip)]
+    pub raw_json: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[non_exhaustive]
 /// A ping response returned from server.
+/// The response schema can be altered anytime, thus `#[non_exhaustive]`.
 pub struct Response {
     /// The version name of the server.
     pub version: String,
@@ -43,6 +47,16 @@ pub struct Response {
     /// See also [the minecraft protocol wiki](https://wiki.vg/Minecraft_Forge_Handshake#FML2_protocol_.281.13_-_Current.29)
     /// for the [`ForgeData`](ForgeData) format.
     pub forge_data: Option<ForgeData>,
+    /// The raw json string returned from the server.
+    /// If the server uses legacy protocol, (thus not returned json) it is simply `None`.
+    #[serde(skip)]
+    pub(crate) raw_json: Option<String>,
+}
+
+impl Response {
+    pub fn raw_json(&self) -> Option<&str> {
+        self.raw_json.as_deref()
+    }
 }
 
 impl TryFrom<RawLatest> for Response {
@@ -66,6 +80,7 @@ impl TryFrom<RawLatest> for Response {
             favicon,
             mod_info: raw.mod_info,
             forge_data: raw.forge_data,
+            raw_json: Some(raw.raw_json),
         })
     }
 }

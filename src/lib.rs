@@ -154,6 +154,7 @@ fn parse_legacy(s: &str) -> Result<Response> {
             forge_data: None,
             mod_info: None,
             sample: None,
+            raw_json: None,
         }),
         _ => Err(Error::UnsupportedProtocol),
     }
