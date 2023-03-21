@@ -14,7 +14,7 @@ pub(crate) struct RawLatest {
     #[serde(rename = "forgeData")]
     pub forge_data: Option<ForgeData>,
     #[serde(skip)]
-    pub raw_json: String,
+    pub raw_json: Vec<u8>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -49,12 +49,16 @@ pub struct Response {
     pub forge_data: Option<ForgeData>,
     /// The raw json string returned from the server.
     /// If the server uses legacy protocol, (thus not returned json) it is simply `None`.
+    /// It is `Vec<u8>` because server is not guaranteed to return valid UTF-8.
     #[serde(skip)]
-    pub(crate) raw_json: Option<String>,
+    pub(crate) raw_json: Option<Vec<u8>>,
 }
 
 impl Response {
-    pub fn raw_json(&self) -> Option<&str> {
+    /// Returns the raw json string returned from the server.
+    /// If the server uses legacy protocol, (thus not returned json) it is simply `None`.
+    /// It is `Vec<u8>` because server is not guaranteed to return valid UTF-8.
+    pub fn raw_json(&self) -> Option<&[u8]> {
         self.raw_json.as_deref()
     }
 }
@@ -146,7 +150,7 @@ pub struct ForgeData {
     /// The list of the mods installed on the server.
     pub mods: Vec<ForgeMod>,
     #[serde(rename = "fmlNetworkVersion")]
-    pub fml_network_version: String,
+    pub fml_network_version: i32,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

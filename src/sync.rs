@@ -51,8 +51,7 @@ where
     stream.read_exact(&mut response_buffer)?;
 
     let mut raw = decode_latest_response(&response_buffer)?;
-    raw.raw_json = String::from_utf8(response_buffer)
-        .expect("Successfully decoded response buffer but failed to convert it as UTF8 String.");
+    raw.raw_json = response_buffer;
     raw.try_into()
 }
 
