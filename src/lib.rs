@@ -1,5 +1,5 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![allow(clippy::clippy::needless_doctest_main)]
+#![allow(clippy::needless_doctest_main)]
 //! craftping provides a `ping` function to send Server List Ping requests to a Minecraft server.
 //!
 //! # Feature flags
@@ -97,7 +97,7 @@ fn build_latest_request(hostname: &str, port: u16) -> Result<Vec<u8>> {
 }
 
 fn decode_latest_response(buffer: &[u8]) -> Result<RawLatest> {
-    serde_json::from_slice(&buffer).map_err(|_| Error::UnsupportedProtocol)
+    serde_json::from_slice(buffer).map_err(|_| Error::UnsupportedProtocol)
 }
 
 const LEGACY_REQUEST: [u8; 35] = [
