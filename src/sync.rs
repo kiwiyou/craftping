@@ -66,7 +66,7 @@ where
     stream.read_to_end(&mut buffer)?;
 
     let response = decode_legacy(&buffer)?;
-    parse_legacy(&response)
+    parse_legacy(&response, buffer)
 }
 
 fn read_varint(stream: &mut impl Read) -> Result<i32> {

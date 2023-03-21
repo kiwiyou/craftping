@@ -47,19 +47,19 @@ pub struct Response {
     /// See also [the minecraft protocol wiki](https://wiki.vg/Minecraft_Forge_Handshake#FML2_protocol_.281.13_-_Current.29)
     /// for the [`ForgeData`](ForgeData) format.
     pub forge_data: Option<ForgeData>,
-    /// The raw json string returned from the server.
-    /// If the server uses legacy protocol, (thus not returned json) it is simply `None`.
-    /// It is `Vec<u8>` because server is not guaranteed to return valid UTF-8.
+    /// The raw response returned from the server.
+    /// It is `Vec<u8>` because server is not guaranteed to return valid UTF-8,
+    /// even not a json at all.
     #[serde(skip)]
-    pub(crate) raw_json: Option<Vec<u8>>,
+    pub(crate) raw: Vec<u8>,
 }
 
 impl Response {
-    /// Returns the raw json string returned from the server.
-    /// If the server uses legacy protocol, (thus not returned json) it is simply `None`.
-    /// It is `Vec<u8>` because server is not guaranteed to return valid UTF-8.
-    pub fn raw_json(&self) -> Option<&[u8]> {
-        self.raw_json.as_deref()
+    /// The raw response returned from the server.
+    /// It is `Vec<u8>` because server is not guaranteed to return valid UTF-8,
+    /// even not a json at all.
+    pub fn raw(&self) -> &[u8] {
+        &self.raw
     }
 }
 
@@ -84,7 +84,7 @@ impl TryFrom<RawLatest> for Response {
             favicon,
             mod_info: raw.mod_info,
             forge_data: raw.forge_data,
-            raw_json: Some(raw.raw_json),
+            raw: raw.raw_json,
         })
     }
 }

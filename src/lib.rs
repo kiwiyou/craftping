@@ -125,7 +125,7 @@ fn decode_legacy(buffer: &[u8]) -> Result<String> {
     String::from_utf16(&utf16be).map_err(|_| Error::UnsupportedProtocol)
 }
 
-fn parse_legacy(s: &str) -> Result<Response> {
+fn parse_legacy(s: &str, raw: Vec<u8>) -> Result<Response> {
     let mut fields = s.split('\0');
     let magic = fields.next().map(|s| s == "\u{00a7}\u{0031}");
     let protocol = fields.next().and_then(|s| s.parse().ok());
@@ -154,7 +154,7 @@ fn parse_legacy(s: &str) -> Result<Response> {
             forge_data: None,
             mod_info: None,
             sample: None,
-            raw_json: None,
+            raw,
         }),
         _ => Err(Error::UnsupportedProtocol),
     }

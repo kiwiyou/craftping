@@ -73,7 +73,7 @@ where
     stream.read_to_end(&mut buffer).await?;
 
     let response = decode_legacy(&buffer)?;
-    parse_legacy(&response)
+    parse_legacy(&response, buffer)
 }
 
 async fn read_varint<Stream>(stream: &mut Stream) -> Result<i32>
