@@ -72,10 +72,11 @@ where
 fn read_varint(stream: &mut impl Read) -> Result<i32> {
     let mut buffer = [0u8];
     let mut result = 0;
-    let mut read_count = 0;
+    let mut read_count = 0u32;
     loop {
         stream.read_exact(&mut buffer)?;
-        result |= (buffer[0] as i32 & LAST_SEVEN_BITS) << (7 * read_count);
+        result |= (buffer[0] as i32 & LAST_SEVEN_BITS).checked_shl(7 * read_count)
+            .ok_or(Error::UnsupportedProtocol)?;
 
         read_count += 1;
         if read_count > 5 {
