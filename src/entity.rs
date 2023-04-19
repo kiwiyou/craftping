@@ -1,4 +1,6 @@
 use std::convert::TryFrom;
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 
 use crate::Error;
 use serde::{Deserialize, Serialize};
@@ -70,7 +72,7 @@ impl TryFrom<RawLatest> for Response {
         let favicon = if let Some(favicon) = raw.favicon {
             // normal server favicon should start with "data:image/png;base64,"
             let slice = favicon.get(22..).ok_or(Error::UnsupportedProtocol)?;
-            Some(base64::decode(slice).map_err(|_| Error::UnsupportedProtocol)?)
+            Some(STANDARD.decode(slice).map_err(|_| Error::UnsupportedProtocol)?)
         } else {
             None
         };
