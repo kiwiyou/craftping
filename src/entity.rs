@@ -11,6 +11,8 @@ pub(crate) struct RawLatest {
     pub players: Players,
     pub description: RawDescription,
     pub favicon: Option<String>,
+    #[serde(rename = "enforcesSecureChat")]
+    pub enforces_secure_chat: Option<bool>,
     #[serde(rename = "modinfo")]
     pub mod_info: Option<ModInfo>,
     #[serde(rename = "forgeData")]
@@ -29,6 +31,8 @@ pub struct Response {
     /// The protocol number of the server.
     /// See also [the minecraft protocol wiki](https://wiki.vg/Protocol_version_numbers) for the actual values.
     pub protocol: i32,
+    /// If the server requires the user to sign chat messages with their private key
+    pub enforces_secure_chat: Option<bool>,
     /// The maximum number of the connected players.
     pub max_players: usize,
     /// The number of the players currently connected.
@@ -79,6 +83,7 @@ impl TryFrom<RawLatest> for Response {
         Ok(Self {
             version: raw.version.name,
             protocol: raw.version.protocol,
+            enforces_secure_chat: raw.enforces_secure_chat,
             max_players: raw.players.max,
             online_players: raw.players.online,
             sample: raw.players.sample,
