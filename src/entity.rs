@@ -1,6 +1,6 @@
-use std::convert::TryFrom;
-use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
+use base64::Engine;
+use std::convert::TryFrom;
 
 use crate::Error;
 use serde::{Deserialize, Serialize};
@@ -13,6 +13,8 @@ pub(crate) struct RawLatest {
     pub favicon: Option<String>,
     #[serde(rename = "enforcesSecureChat")]
     pub enforces_secure_chat: Option<bool>,
+    #[serde(rename = "previewsChat")]
+    pub previews_chat: Option<bool>,
     #[serde(rename = "modinfo")]
     pub mod_info: Option<ModInfo>,
     #[serde(rename = "forgeData")]
@@ -31,8 +33,9 @@ pub struct Response {
     /// The protocol number of the server.
     /// See also [the minecraft protocol wiki](https://wiki.vg/Protocol_version_numbers) for the actual values.
     pub protocol: i32,
-    /// If the server requires the user to sign chat messages with their private key
+    /// If the server requires the user to sign chat messages with their private key.
     pub enforces_secure_chat: Option<bool>,
+    pub previews_chat: Option<bool>,
     /// The maximum number of the connected players.
     pub max_players: usize,
     /// The number of the players currently connected.
@@ -76,7 +79,11 @@ impl TryFrom<RawLatest> for Response {
         let favicon = if let Some(favicon) = raw.favicon {
             // normal server favicon should start with "data:image/png;base64,"
             let slice = favicon.get(22..).ok_or(Error::UnsupportedProtocol)?;
-            Some(STANDARD.decode(slice).map_err(|_| Error::UnsupportedProtocol)?)
+            Some(
+                STANDARD
+                    .decode(slice)
+                    .map_err(|_| Error::UnsupportedProtocol)?,
+            )
         } else {
             None
         };
@@ -84,6 +91,7 @@ impl TryFrom<RawLatest> for Response {
             version: raw.version.name,
             protocol: raw.version.protocol,
             enforces_secure_chat: raw.enforces_secure_chat,
+            previews_chat: raw.previews_chat,
             max_players: raw.players.max,
             online_players: raw.players.online,
             sample: raw.players.sample,

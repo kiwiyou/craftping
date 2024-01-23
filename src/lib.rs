@@ -144,6 +144,7 @@ fn parse_legacy(s: &str, raw: Vec<u8>) -> Result<Response> {
         ) => Ok(Response {
             protocol,
             enforces_secure_chat: None,
+            previews_chat: None,
             version: version.to_string(),
             description: Chat {
                 text: motd.to_string(),

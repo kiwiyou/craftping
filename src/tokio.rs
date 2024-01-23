@@ -85,7 +85,8 @@ where
     let mut read_count = 0u32;
     loop {
         stream.read_exact(&mut buffer).await?;
-        result |= (buffer[0] as i32 & LAST_SEVEN_BITS).checked_shl(7 * read_count)
+        result |= (buffer[0] as i32 & LAST_SEVEN_BITS)
+            .checked_shl(7 * read_count)
             .ok_or(Error::UnsupportedProtocol)?;
 
         read_count += 1;
