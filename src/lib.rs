@@ -143,6 +143,7 @@ fn parse_legacy(s: &str, raw: Vec<u8>) -> Result<Response> {
             Some(max_players),
         ) => Ok(Response {
             protocol,
+            enforces_secure_chat: None,
             version: version.to_string(),
             description: Chat {
                 text: motd.to_string(),
