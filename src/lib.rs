@@ -41,7 +41,7 @@ pub mod tokio;
 
 pub use entity::*;
 
-#[derive(Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 /// The ping error type.
 pub enum Error {
     /// Returned when I/O (especially networking) failed.
