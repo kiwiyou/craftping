@@ -1,6 +1,6 @@
 use base64::engine::general_purpose::STANDARD;
 use base64::Engine;
-use std::convert::TryFrom;
+use std::{convert::TryFrom, fmt};
 
 use crate::Error;
 use serde::{Deserialize, Serialize};
@@ -234,5 +234,26 @@ impl From<RawDescription> for Chat {
                 ..Default::default()
             },
         }
+    }
+}
+
+impl fmt::Display for Chat {
+    // Print every .text string, and recursively print every .extra chat
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Remove any newlines
+        let text = self.text.replace("\n", "");
+
+        // Converty all multiple spaces to a single space
+        let text = text.split_whitespace().collect::<Vec<&str>>().join(" ");
+
+        // Print the text
+        write!(f, "{}", text)?;
+
+        // Print the extra chat
+        for extra in &self.extra {
+            write!(f, "{}", extra.clone())?;
+        }
+
+        Ok(())
     }
 }
