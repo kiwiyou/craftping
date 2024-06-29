@@ -194,7 +194,7 @@ pub struct ForgeMod {
     pub mod_marker: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Deserialize, Serialize, Default, Clone)]
 /// The chat component used in the server description.
 ///
 /// See also [the minecraft protocol wiki](https://wiki.vg/Chat#Current_system_.28JSON_Chat.29).
@@ -237,13 +237,13 @@ impl From<RawDescription> for Chat {
     }
 }
 
-impl fmt::Display for Chat {
+impl fmt::Debug for Chat {
     // Print every .text string, and recursively print every .extra chat
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         // Remove any newlines
         let text = self.text.replace("\n", "");
 
-        // Converty all multiple spaces to a single space
+        // Convert all multiple spaces to a single space
         let text = text.split_whitespace().collect::<Vec<&str>>().join(" ");
 
         // Print the text
@@ -251,7 +251,7 @@ impl fmt::Display for Chat {
 
         // Print the extra chat
         for extra in &self.extra {
-            write!(f, "{}", extra.clone())?;
+            write!(f, "{:?}", extra.clone())?;
         }
 
         Ok(())
