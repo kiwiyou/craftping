@@ -1,5 +1,5 @@
-use base64::engine::general_purpose::STANDARD;
 use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 use std::{convert::TryFrom, fmt};
 
 use crate::Error;
@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 pub(crate) struct RawLatest {
     pub version: Version,
     pub players: Players,
-    pub description: RawDescription,
+    pub description: Option<RawDescription>,
     pub favicon: Option<String>,
     #[serde(rename = "enforcesSecureChat")]
     pub enforces_secure_chat: Option<bool>,
@@ -45,7 +45,7 @@ pub struct Response {
     pub sample: Option<Vec<Player>>,
     /// The description (aka MOTD) of the server.
     /// See also [the minecraft protocol wiki](https://wiki.vg/Chat#Current_system_.28JSON_Chat.29) for the [`Chat`](Chat) format.
-    pub description: Chat,
+    pub description: Option<Chat>,
     /// The favicon of the server in PNG format.
     pub favicon: Option<Vec<u8>>,
     /// The mod information object used in FML protocol (version 1.7 - 1.12).
@@ -95,7 +95,7 @@ impl TryFrom<RawLatest> for Response {
             max_players: raw.players.max,
             online_players: raw.players.online,
             sample: raw.players.sample,
-            description: raw.description.into(),
+            description: raw.description.map(Chat::from),
             favicon,
             mod_info: raw.mod_info,
             forge_data: raw.forge_data,
