@@ -1,6 +1,6 @@
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
-use std::{convert::TryFrom, fmt};
+use std::convert::TryFrom;
 
 use crate::Error;
 use serde::{Deserialize, Serialize};
@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 pub(crate) struct RawLatest {
     pub version: Version,
     pub players: Players,
-    pub description: Option<RawDescription>,
+    pub description: Option<serde_json::Value>,
     pub favicon: Option<String>,
     #[serde(rename = "enforcesSecureChat")]
     pub enforces_secure_chat: Option<bool>,
@@ -44,8 +44,8 @@ pub struct Response {
     /// Note that it can be `None` even if some players are connected.
     pub sample: Option<Vec<Player>>,
     /// The description (aka MOTD) of the server.
-    /// See also [the minecraft protocol wiki](https://wiki.vg/Chat#Current_system_.28JSON_Chat.29) for the [`Chat`](Chat) format.
-    pub description: Option<Chat>,
+    /// See also [the minecraft protocol wiki](https://wiki.vg/Chat#Current_system_.28JSON_Chat.29) for the JSON format.
+    pub description: Option<serde_json::Value>,
     /// The favicon of the server in PNG format.
     pub favicon: Option<Vec<u8>>,
     /// The mod information object used in FML protocol (version 1.7 - 1.12).
@@ -95,7 +95,7 @@ impl TryFrom<RawLatest> for Response {
             max_players: raw.players.max,
             online_players: raw.players.online,
             sample: raw.players.sample,
-            description: raw.description.map(Chat::from),
+            description: raw.description,
             favicon,
             mod_info: raw.mod_info,
             forge_data: raw.forge_data,
@@ -125,13 +125,6 @@ pub struct Player {
     /// The uuid of the player.
     /// Normally used to identify a player.
     pub id: String,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(untagged)]
-pub(crate) enum RawDescription {
-    Raw(String),
-    Chat(Chat),
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -192,68 +185,4 @@ pub struct ForgeMod {
     #[serde(rename = "modmarker")]
     /// The version of the mod.
     pub mod_marker: String,
-}
-
-#[derive(Deserialize, Serialize, Default, Clone)]
-/// The chat component used in the server description.
-///
-/// See also [the minecraft protocol wiki](https://wiki.vg/Chat#Current_system_.28JSON_Chat.29).
-pub struct Chat {
-    /// The text which this `Chat` object holds.
-    pub text: String,
-    #[serde(default)]
-    /// `true` if the text *and* the extras should be __bold__.
-    pub bold: bool,
-    #[serde(default)]
-    /// `true` if the text *and* the extras should be *italic*.
-    pub italic: bool,
-    #[serde(default)]
-    /// `true` if the text *and* the extras should be <u>underlined</u>.
-    pub underlined: bool,
-    #[serde(default)]
-    /// `true` if the text *and* the extras should have a <strike>strikethrough</strike>.
-    pub strikethrough: bool,
-    #[serde(default)]
-    /// `true` if the text *and* the extras should look obfuscated.
-    pub obfuscated: bool,
-    /// The color which the text and the extras should have.
-    /// `None` to use default color.
-    pub color: Option<String>,
-    #[serde(default)]
-    /// The extra text components following this text.
-    /// They should inherit this chat component's properties (bold, italic, etc.) but can also override the properties.
-    pub extra: Vec<Chat>,
-}
-
-impl From<RawDescription> for Chat {
-    fn from(description: RawDescription) -> Self {
-        match description {
-            RawDescription::Chat(chat) => chat,
-            RawDescription::Raw(text) => Chat {
-                text,
-                ..Default::default()
-            },
-        }
-    }
-}
-
-impl fmt::Debug for Chat {
-    // Print every .text string, and recursively print every .extra chat
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // Remove any newlines
-        let text = self.text.replace("\n", "");
-
-        // Convert all multiple spaces to a single space
-        let text = text.split_whitespace().collect::<Vec<&str>>().join(" ");
-
-        // Print the text
-        write!(f, "{}", text)?;
-
-        // Print the extra chat
-        for extra in &self.extra {
-            write!(f, "{:?}", extra.clone())?;
-        }
-
-        Ok(())
-    }
 }

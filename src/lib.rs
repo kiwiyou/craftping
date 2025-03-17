@@ -146,10 +146,7 @@ fn parse_legacy(s: &str, raw: Vec<u8>) -> Result<Response> {
             enforces_secure_chat: None,
             previews_chat: None,
             version: version.to_string(),
-            description: Some(Chat {
-                text: motd.to_string(),
-                ..Default::default()
-            }),
+            description: Some(serde_json::Value::String(motd.to_string())),
             online_players: players,
             max_players,
             favicon: None,

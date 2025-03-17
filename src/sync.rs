@@ -1,14 +1,14 @@
-//! Provides synchronous, blocking [`ping`](ping) function.
+//! Provides synchronous, blocking [`ping`] function.
 //!
-//! The [`ping`](ping) function here sends a ping request, and wait for the server to respond.
-//! If you want to send ping in an asynchronous context, see [`tokio`](tokio) or [`futures`](futures) module.
+//! The [`ping`] function here sends a ping request, and wait for the server to respond.
+//! If you want to send ping in an asynchronous context, see [`tokio`] or [`futures`] module.
 use std::convert::TryInto;
 
 use crate::*;
 
 /// Send a ping request to the server and wait for the response.
 ///
-/// See also [`Response`](Response).
+/// See also [`Response`].
 ///
 /// # Examples
 ///

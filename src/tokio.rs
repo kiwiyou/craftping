@@ -1,7 +1,7 @@
-//! Provides asynchronous [`ping`](ping) function. (especially for tokio streams)
+//! Provides asynchronous [`ping`] function. (especially for tokio streams)
 //!
-//! The [`ping`](ping) function here sends a ping request, and returns a [`Future`](std::future::Future) resolves to a result of [`Response`](Response).
-//! If you want to send ping synchronously, see [`sync`](sync) module.
+//! The [`ping`] function here sends a ping request, and returns a [`Future`] resolves to a result of [`Response`].
+//! If you want to send ping synchronously, see [`sync`] module.
 use std::convert::TryInto;
 
 use ::tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
@@ -10,7 +10,7 @@ use crate::*;
 
 /// Send a ping request to the server and return a future response.
 ///
-/// See also [`Response`](Response).
+/// See also [`Response`].
 ///
 /// # Examples
 ///
