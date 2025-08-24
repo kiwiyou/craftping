@@ -62,7 +62,7 @@ async fn main() {
 
 Note that `tokio` module requires `async-tokio` feature and `futures` `async-futures`.
 
-Check [here](https://wiki.vg/Server_List_Ping#Response) for more information about ping result.
+Check [here](https://minecraft.wiki/w/Java_Edition_protocol/Server_List_Ping) for more information about ping result.
 
 ## Contributing
 
