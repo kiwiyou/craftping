@@ -18,7 +18,7 @@
 //!     let hostname = "my.server.com";
 //!     let port = 25565;
 //!     let mut stream = TcpStream::connect((hostname, port)).unwrap();
-//!     let response = ping(&mut stream, hostname, port).unwrap();
+//!     let response = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET).unwrap();
 //!     println!("Players online: {}", response.online_players);
 //! }
 //! ```
@@ -70,13 +70,15 @@ impl From<std::io::Error> for Error {
 /// The ping result type.
 pub type Result<T> = std::result::Result<T, Error>;
 
-fn build_latest_request(hostname: &str, port: u16) -> Result<Vec<u8>> {
+/// The conventional value of protocol version when the ping client intends to determine which version to use.
+pub const PROTOCOL_VERSION_NOT_SET: i32 = -1;
+
+fn build_latest_request(hostname: &str, port: u16, protocol_version: i32) -> Result<Vec<u8>> {
     // buffer for the 1st packet's data part
     let mut buffer = vec![
         0x00, // 1st packet id: 0 for handshake as VarInt
-        0xff, 0xff, 0xff, 0xff,
-        0x0f, // protocol version: -1 (determining what version to use) as VarInt
     ];
+    write_varint(&mut buffer, protocol_version);
     // Some server implementations require hostname and port to be properly set (Notchian does not)
     write_varint(&mut buffer, hostname.len() as i32); // length of hostname as VarInt
     buffer.extend_from_slice(hostname.as_bytes());

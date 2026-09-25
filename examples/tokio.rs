@@ -6,7 +6,13 @@ async fn main() -> craftping::Result<()> {
     let servers = ["mc.hypixel.net"];
     for &server in servers.iter() {
         let mut stream = TcpStream::connect((server, 25565)).await?;
-        let response = ping(&mut stream, server, 25565).await?;
+        let response = ping(
+            &mut stream,
+            server,
+            25565,
+            craftping::PROTOCOL_VERSION_NOT_SET,
+        )
+        .await?;
         println!("ping to {}:", server);
         println!("{:?}", response);
     }

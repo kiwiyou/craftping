@@ -2,6 +2,11 @@
 
 craftping is a Rust library to ping Minecraft Servers.
 
+> [!CAUTION]
+> Examples below use `craftping::PROTOCOL_VERSION_NOT_SET`.
+> [You might want to change this value depending on the server](https://github.com/kiwiyou/craftping/issues/20),
+> though most servers allow this placeholder value for pinging.
+
 ## Usage
 
 ```toml
@@ -19,7 +24,7 @@ fn main() {
     let hostname = "localhost";
     let port = 25565;
     let mut stream = TcpStream::connect((hostname, port)).unwrap();
-    let pong = ping(&mut stream, hostname, port).expect("Cannot ping server");
+    let pong = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET).expect("Cannot ping server");
     println!("Ping result: {:?}", pong);
 }
 ```
@@ -39,7 +44,7 @@ async fn main() {
     let hostname = "localhost";
     let port = 25565;
     let mut stream = TcpStream::connect((hostname, port)).await.unwrap();
-    let pong = ping(&mut stream, hostname, port).await.expect("Cannot ping server");
+    let pong = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET).await.expect("Cannot ping server");
     println!("Ping result: {:?}", pong);
 }
 ```
@@ -55,7 +60,7 @@ async fn main() {
     let hostname = "localhost";
     let port = 25565;
     let mut stream = TcpStream::connect((hostname, port)).await.unwrap();
-    let pong = ping(&mut stream, hostname, port).await.expect("Cannot ping server");
+    let pong = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET).await.expect("Cannot ping server");
     println!("Ping result: {:?}", pong);
 }
 ```

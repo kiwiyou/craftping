@@ -8,6 +8,14 @@ use crate::*;
 
 /// Send a ping request to the server and wait for the response.
 ///
+/// `hostname` and `port` don't have to be equal to those used in underlying connection.
+/// The Notchian server does not use this informationm, while others can.
+///
+/// `protocol_version` is a [protocol version number](https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Protocol_version_numbers)
+/// that is passed to the server. It is meaningful only to servers for minecraft version 1.7+, and [`crate::PROTOCOL_VERSION_NOT_SET`]
+/// can be used as a conventional value for undetermined version.
+/// Some servers require setting `protocol_version` to be in certain range, and failure to do so can cause [`crate::Error::UnsupportedProtocol`].
+///
 /// See also [`Response`].
 ///
 /// # Examples
@@ -19,25 +27,35 @@ use crate::*;
 /// let hostname = "my.server.com";
 /// let port = 25565;
 /// let mut stream = TcpStream::connect((hostname, port)).unwrap();
-/// let response = ping(&mut stream, hostname, port).unwrap();
+/// let response = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET).unwrap();
 /// println!(
 ///     "{} of {} player(s) online",
 ///     response.online_players,
 ///     response.max_players,
 /// );
 /// ```
-pub fn ping<Stream>(stream: &mut Stream, hostname: &str, port: u16) -> Result<Response>
+pub fn ping<Stream>(
+    stream: &mut Stream,
+    hostname: &str,
+    port: u16,
+    protocol_version: i32,
+) -> Result<Response>
 where
     Stream: Read + Write,
 {
-    ping_latest(stream, hostname, port).or_else(|_| ping_legacy(stream))
+    ping_latest(stream, hostname, port, protocol_version).or_else(|_| ping_legacy(stream))
 }
 
-fn ping_latest<Stream>(stream: &mut Stream, hostname: &str, port: u16) -> Result<Response>
+fn ping_latest<Stream>(
+    stream: &mut Stream,
+    hostname: &str,
+    port: u16,
+    protocol_version: i32,
+) -> Result<Response>
 where
     Stream: Read + Write,
 {
-    let request = build_latest_request(hostname, port)?;
+    let request = build_latest_request(hostname, port, protocol_version)?;
     stream.write_all(&request)?;
     stream.flush()?;
 
