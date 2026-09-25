@@ -24,7 +24,8 @@ fn main() {
     let hostname = "localhost";
     let port = 25565;
     let mut stream = TcpStream::connect((hostname, port)).unwrap();
-    let pong = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET).expect("Cannot ping server");
+    let pong = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET)
+        .expect("Cannot ping server");
     println!("Ping result: {:?}", pong);
 }
 ```
@@ -44,7 +45,9 @@ async fn main() {
     let hostname = "localhost";
     let port = 25565;
     let mut stream = TcpStream::connect((hostname, port)).await.unwrap();
-    let pong = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET).await.expect("Cannot ping server");
+    let pong = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET)
+        .await
+        .expect("Cannot ping server");
     println!("Ping result: {:?}", pong);
 }
 ```
@@ -60,7 +63,9 @@ async fn main() {
     let hostname = "localhost";
     let port = 25565;
     let mut stream = TcpStream::connect((hostname, port)).await.unwrap();
-    let pong = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET).await.expect("Cannot ping server");
+    let pong = ping(&mut stream, hostname, port, craftping::PROTOCOL_VERSION_NOT_SET)
+        .await
+        .expect("Cannot ping server");
     println!("Ping result: {:?}", pong);
 }
 ```
