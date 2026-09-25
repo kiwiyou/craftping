@@ -8,6 +8,7 @@ license = "MIT"
 keywords = ["minecraft", "ping"]
 categories = ["network-programming"]
 repository = "https://github.com/kiwiyou/craftping"
+rust-version = "1.85.1" # minimum version for 2024 edition
 
 [package.metadata.docs.rs]
 all-features = true
