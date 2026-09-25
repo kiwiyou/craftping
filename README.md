@@ -11,7 +11,7 @@ craftping is a Rust library to ping Minecraft Servers.
 
 ```toml
 [dependencies]
-craftping = "0.7.0"
+craftping = "0.8.0"
 ```
 
 You can synchronously ping to the server with `craftping::sync::ping`:

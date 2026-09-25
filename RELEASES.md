@@ -1,3 +1,22 @@
+Version 0.8.0 (2026-09-26)
+==========================
+
+<a id="0.8.0-Libraries"></a>
+Libraries
+---------
+- [Allow callers to set the protocol version](https://github.com/kiwiyou/craftping/commit/c9d66d3) sent in modern server pings. Use `PROTOCOL_VERSION_NOT_SET` (-1) when the version is unknown.
+- [Declare Rust 1.85.1 as the minimum supported version](https://github.com/kiwiyou/craftping/commit/227adea).
+
+<a id="0.8.0-Documentation"></a>
+Documentation
+-------------
+- [Fix the broken Server List Ping wiki link](https://github.com/kiwiyou/craftping/commit/2e42101) in the README, contributed by SeongHoon Ryu (@ryush00).
+
+<a id="0.8.0-Compatibility-Notes"></a>
+Compatibility Notes
+-------------------
+- `sync::ping`, `tokio::ping`, and `futures::ping` now require a fourth `protocol_version: i32` argument. Pass `PROTOCOL_VERSION_NOT_SET` to retain the previous handshake value.
+
 Version 0.7.0 (2025-03-18)
 ==========================
 
